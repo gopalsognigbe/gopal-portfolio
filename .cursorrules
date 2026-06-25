@@ -1,0 +1,114 @@
+# Gopal's Portfolio — Cursor AI Rules
+
+## Project context
+Personal developer portfolio for Gopal — M2 AI student (ESGIS, Cotonou, Bénin) and freelance front-end developer.
+Specialization: RAG systems, open-source LLMs, vibe coding.
+Stack: Vite + React + Tailwind CSS v3
+
+---
+
+## Design system — "Neural Dusk"
+
+### Color tokens (tailwind.config.js)
+| Token     | Hex       | Usage                             |
+|-----------|-----------|-----------------------------------|
+| bg        | #0D0F1A   | Main background                   |
+| surface   | #141727   | Cards, secondary sections         |
+| border    | #1E2438   | Dividers, card borders            |
+| accent    | #F59E0B   | Amber — primary CTAs, highlights  |
+| accent-2  | #818CF8   | Indigo — featured/thesis items    |
+| body      | #F8FAFC   | Primary text                      |
+| muted     | #64748B   | Secondary text, labels            |
+
+### Typography
+- Display font: 'Space Grotesk' (headings, body)
+- Mono font: 'JetBrains Mono' (eyebrows, tech tags, code)
+- Section eyebrow: font-mono text-accent text-xs tracking-[0.15em] uppercase
+- Section title: text-4xl font-bold text-body tracking-tight
+- Body copy: text-muted text-base/lg leading-relaxed
+
+### Component patterns — always use these exact classes
+
+Section wrapper:
+  py-28 px-8 bg-bg border-t border-border
+
+Section eyebrow:
+  font-mono text-accent text-xs tracking-[0.15em] uppercase mb-3
+
+Section title:
+  text-4xl font-bold text-body tracking-tight mb-14
+
+Project card (default):
+  bg-surface border border-border rounded-xl p-7 hover:-translate-y-1 transition-all duration-250
+
+Project card (featured — thesis):
+  bg-surface border border-accent-2/60 border-t-2 border-t-accent-2 rounded-xl p-7 hover:-translate-y-1 transition-all
+
+Tag/badge (accent):
+  font-mono text-xs bg-accent/10 text-accent px-2.5 py-1 rounded inline-block
+
+Tag/badge (accent-2):
+  font-mono text-xs bg-accent-2/10 text-accent-2 px-2.5 py-1 rounded inline-block
+
+Tech stack badge:
+  font-mono text-xs bg-bg border border-border rounded px-3 py-1.5 text-muted
+
+CTA primary:
+  bg-accent text-bg font-semibold text-sm px-7 py-3 rounded-md hover:bg-amber-400 transition-colors
+
+CTA secondary:
+  border border-border text-body text-sm px-7 py-3 rounded-md hover:border-muted transition-colors
+
+---
+
+## Signature element — NeuralCanvas
+The hero section contains an animated particle graph (canvas-based) with amber nodes and connections.
+This represents Gopal's RAG knowledge graph and is the visual identity of the page.
+NEVER remove, replace, or simplify this animation.
+The canvas must always:
+- Use position: absolute with inset-0 on the hero container (position: relative, overflow-hidden)
+- Render amber (#F59E0B) nodes with connecting lines at opacity ~0.38
+- Animate smoothly at 60fps via requestAnimationFrame
+
+---
+
+## File structure
+src/
+  App.jsx              — main entry, imports all sections
+  index.css            — Tailwind directives + Google Fonts + scrollbar
+  components/
+    Navbar.jsx         — fixed nav, scroll-aware blur
+    Hero.jsx           — NeuralCanvas + headline + CTAs
+    About.jsx          — short bio section
+    Projects.jsx       — project grid
+    ProjectCard.jsx    — individual card
+    Stack.jsx          — tech stack categories
+    Contact.jsx        — links + email
+    Footer.jsx         — simple footer
+
+---
+
+## Code conventions
+- Functional components only (no class components)
+- Default export for App, named exports for all other components
+- Data arrays (PROJECTS, STACK) at top of file, not hardcoded in JSX
+- No inline styles — Tailwind classes only
+- Framer Motion for scroll-reveal animations (use `motion.div` + `whileInView`)
+- smooth scroll via CSS `scroll-behavior: smooth` on html tag
+- All external links open in `target="_blank" rel="noopener noreferrer"`
+
+---
+
+## Adding a new project
+Add an object to the PROJECTS array in App.jsx:
+{
+  id: number,
+  featured: boolean,        // true = indigo accent-2 top border
+  tag: string,              // e.g. "React · AI"
+  tagColor: "accent" | "accent-2",
+  title: string,
+  description: string,
+  stack: string[],          // tech badges
+  link: string,             // live URL
+  github: string,           // repo URL
+}
