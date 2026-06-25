@@ -6,7 +6,12 @@ import "./index.css";
 const GITHUB_USERNAME = "gopalsognigbe";
 
 // These repos are already in FEATURED_PROJECTS below — exclude from GitHub fetch
-const EXCLUDED_REPOS = ["dramabot", "legal-rag-assistant", "compound-interest-simulator"];
+const EXCLUDED_REPOS = [
+  "dramabot",
+  "legal-rag-assistant",
+  "compound-interest-simulator",
+  "gopal-portfolio",
+];
 
 // ─── FEATURED PROJECTS (always pinned at top, manually curated) ───────────────
 // These are your most important projects — thesis, DramaBot, etc.
