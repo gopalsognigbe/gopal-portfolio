@@ -3,7 +3,7 @@ import "./index.css";
 
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
 // TODO: replace with your real GitHub username
-const GITHUB_USERNAME = "your-github-username";
+const GITHUB_USERNAME = "gopalsognigbe";
 
 // These repos are already in FEATURED_PROJECTS below — exclude from GitHub fetch
 const EXCLUDED_REPOS = ["dramabot", "legal-rag-assistant", "compound-interest-simulator"];
@@ -79,12 +79,13 @@ function useGitHubProjects(username) {
       })
       .then((repos) => {
         const mapped = repos
-          // Exclude forks, repos without description, and already-featured repos
+          // Only deployed repos (homepage set on GitHub) — exclude forks and featured duplicates
           .filter(
             (r) =>
               !r.fork &&
-              r.description &&
-              !EXCLUDED_REPOS.includes(r.name.toLowerCase())
+              !EXCLUDED_REPOS.includes(r.name.toLowerCase()) &&
+              r.homepage &&
+              r.homepage.startsWith("http")
           )
           .map((repo) => ({
             id: repo.id,
@@ -98,14 +99,13 @@ function useGitHubProjects(username) {
               .split(/[-_]/)
               .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
               .join(" "),
-            description: repo.description,
+            description: repo.description || "Open source project on GitHub.",
             // Stack: primary language + first 3 topics
             stack: [
               repo.language,
               ...(repo.topics || []).slice(0, 3),
             ].filter(Boolean),
-            // homepage = Vercel URL set in GitHub repo settings
-            link: repo.homepage || "#",
+            link: repo.homepage,
             github: repo.html_url,
             screenshot: null, // auto-generated from link by microlink.io
           }));
@@ -455,6 +455,10 @@ function ProjectCard({ project }) {
 // ─── PROJECTS — merges featured + GitHub repos ────────────────────────────────
 function Projects() {
   const { projects: githubProjects, loading, error } = useGitHubProjects(GITHUB_USERNAME);
+  const deployedFeatured = FEATURED_PROJECTS.filter(
+    (p) => p.link && p.link.startsWith("http")
+  );
+  const totalProjects = deployedFeatured.length + githubProjects.length;
 
   return (
     <section id="projects" className="py-28 px-8 bg-bg border-t border-border">
@@ -467,25 +471,18 @@ function Projects() {
 
       {/* GitHub status badge */}
       <p className="text-muted text-sm mb-14 font-mono">
-        {loading && "⟳ Loading repos from GitHub..."}
-        {error && `⚠ Could not load GitHub repos: ${error}`}
-        {!loading && !error && githubProjects.length > 0 && (
+        {loading && "Loading your GitHub repos..."}
+        {error && <span className="text-amber-400">{error}</span>}
+        {!loading && !error && (
           <>
-            <span className="text-accent">✓</span>{" "}
-            {FEATURED_PROJECTS.length + githubProjects.length} projects — {githubProjects.filter(p => p.link !== "#").length} deployed on Vercel
+            {totalProjects} projects · {totalProjects} live on Vercel
           </>
-        )}
-        {!loading && !error && githubProjects.length === 0 && GITHUB_USERNAME !== "your-github-username" && (
-          "No public repos found — check your GitHub username."
-        )}
-        {GITHUB_USERNAME === "your-github-username" && (
-          <span className="text-amber-400">⚠ Set your GITHUB_USERNAME in App.jsx to load your repos</span>
         )}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Featured projects always first */}
-        {FEATURED_PROJECTS.map((p) => (
+        {/* Featured projects with a live deployment */}
+        {deployedFeatured.map((p) => (
           <ProjectCard key={p.id} project={p} />
         ))}
 
@@ -550,7 +547,7 @@ function Contact() {
       </p>
       <div className="flex flex-wrap gap-4">
         <a
-          href="mailto:your@email.com"
+          href="mailto:sognigbegopal@gmail.com"
           className="bg-accent text-bg font-semibold text-sm px-7 py-3 rounded-md hover:bg-amber-400 transition-colors"
         >
           Send an email
@@ -564,7 +561,7 @@ function Contact() {
           GitHub
         </a>
         <a
-          href="https://linkedin.com/in/your-profile"
+          href="https://www.linkedin.com/in/gopal-sognigbe-1a09742b1"
           target="_blank"
           rel="noopener noreferrer"
           className="border border-border text-body text-sm px-7 py-3 rounded-md hover:border-muted transition-colors"
