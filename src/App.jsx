@@ -83,15 +83,22 @@ function useGitHubProjects(username) {
         return res.json();
       })
       .then((repos) => {
+        const currentHostname = window.location.hostname;
         const mapped = repos
-          // Only deployed repos (homepage set on GitHub) — exclude forks and featured duplicates
-          .filter(
-            (r) =>
-              !r.fork &&
-              !EXCLUDED_REPOS.includes(r.name.toLowerCase()) &&
-              r.homepage &&
-              r.homepage.startsWith("http")
-          )
+          // Only deployed repos — exclude forks, featured duplicates, and this portfolio itself
+          .filter((r) => {
+            if (r.fork) return false;
+            if (EXCLUDED_REPOS.includes(r.name.toLowerCase())) return false;
+            if (!r.homepage || !r.homepage.startsWith("http")) return false;
+
+            try {
+              if (new URL(r.homepage).hostname === currentHostname) return false;
+            } catch {
+              return false;
+            }
+
+            return true;
+          })
           .map((repo) => ({
             id: repo.id,
             featured: false,
